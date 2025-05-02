@@ -1,0 +1,17 @@
+1. Creating a table:
+CREATE TABLE table_name (
+  column_name data_type constraints,
+  ...
+);
+
+Data types: INTEGER, TEXT, DATE (instead use text, also ok)
+
+Primary key, to automatically add an id number, no duplicates!
+id INTEGER PRIMARY KEY
+
+
+Adding data to a table:
+INSERT INTO table_name (column1, column2) VALUES ('value1', 'value2');
+
+Displaying a table:
+SELECT * FROM table_name
