@@ -15,37 +15,36 @@ app.get("/", (req, res) => {
     res.send("MemoryMiles backend is running!")
 })
 
-db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Portugal", 1]);
-db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Japan", 2]);
-db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Cyprus", 1]);
 
-db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`,
-    ['Bulgaria', 1],
-    function (err) {
+// Inserting some countries into the database for testing purposes
+// db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Portugal", 1]);
+// db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Japan", 2]);
+// db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Cyprus", 1]);
+
+// db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`,
+//     ['Bulgaria', 1],
+//     function (err) {
+//         if (err) {
+//             return console.error(`Error inserting country:`, err.message)
+//         } else {
+//             console.log(`Country inserted with ID ${this.lastID}`)
+//         }
+//     }
+// ),
+
+
+
+app.get("/countries", (req, res) => {
+    // Query to select all countries from the database
+    db.all(`SELECT * FROM countries`, [], (err, rows) => {
         if (err) {
-            return console.error(`Error inserting country:`, err.message)
+            console.error(err)
+            res.status(500).send("Internal server error")
         } else {
-            console.log(`Country inserted with ID ${this.lastID}`)
+            res.status(200).json(rows)
         }
-    }
-),
-
-
-
-
-
-
-    app.get("/countries", (req, res) => {
-        // Query to select all countries from the database
-        db.all(`SELECT * FROM countries`, [], (err, rows) => {
-            if (err) {
-                console.error(err)
-                res.status(500).send("Internal server error")
-            } else {
-                res.status(200).json(rows)
-            }
-        })
     })
+})
 
 // get /places?country_id=.., showi only places for a selected country
 app.get("/places", (req, res) => {
@@ -92,10 +91,73 @@ app.post("/plannedtrips", (req, res) => {
             })
         }
     })
+})
+
+// show all planned trips
+app.get("/plannedtrips", (req, res) => {
 
 
+    const query = `
+    SELECT * FROM plannedTrips
+    `
+
+    db.all(query, function (err, rows) {
+        if (err) {
+            res.status(500).json({ error: "Internal server error" })
+        } else {
+            res.status(200).json(rows)
+        }
+    })
 
 })
+
+// let the user edit existing trips
+app.put("/plannedtrips/:id", (req, res) => {
+    const plannedTripsId = req.params.id
+    const { country_id, city, startDate, endDate, companions, notes } = req.body
+
+    const query = `
+    UPDATE plannedTrips
+    SET country_id = ?, city = ?, startDate = ?, endDate = ?, companions = ?, notes = ?
+    WHERE id = ?
+    `
+    const values = [country_id, city, startDate, endDate, companions, notes, plannedTripsId]
+
+    db.run(query, values, function (err) {
+        if (err) {
+            res.status(501).json({ error: "Internal server error" })
+        } else if (this.changes === 0) {
+            res.status(404).json({ error: "Trip not found" })
+        } else {
+            res.status(201).json({
+                message: "Trip edited succesfully"
+            })
+        }
+    })
+})
+
+
+// Deleting planned trips
+app.delete("/plannedtrips/:id", (req, res) => {
+    const plannedTripsId = req.params.id
+
+    const query = `
+    DELETE FROM plannedTrips
+    WHERE id = ?
+    `
+
+    db.run(query, [plannedTripsId], function (err) {
+        if (err) {
+            res.status(501).json({ err: "Internal server error" })
+        } else if (this.changes === 0) {
+            res.status(404).json({ err: "trip not found" })
+        } else {
+            res.status(200).json(
+                { message: "Trip deleted succesfully" })
+        }
+    })
+})
+
 
 
 app.listen(5005, () => {
