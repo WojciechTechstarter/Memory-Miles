@@ -46,6 +46,23 @@ app.get("/countries", (req, res) => {
     })
 })
 
+// get places route
+app.get("/places", (req, res) => {
+
+    const query = `
+    SELECT * FROM places
+    `
+
+    db.all(query, [], function (err, rows) {
+        if (err) {
+            res.status(501).json({ error: "Failed to display places. Try again later" })
+        } else[
+            res.status(201).json(rows)
+        ]
+    })
+})
+
+
 // get /places?country_id=.., showi only places for a selected country
 app.get("/places", (req, res) => {
     const countryId = req.query.country_id
@@ -65,6 +82,56 @@ app.get("/places", (req, res) => {
         )
     }
 })
+
+// posting a new place
+app.post("/places", (req, res) => {
+    const {
+        country_id, name, description, rating_culture, rating_scenery,
+        rating_fun, rating_safety } = req.body
+
+
+
+
+    if (!country_id || !name) {
+        return res.status(404).json({ error: "Missing required fields: country_id or name" })
+    }
+
+    const query =
+        `INSERT INTO places (
+         country_id, name, description, rating_culture, rating_scenery,
+        rating_fun, rating_safety
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+         `
+
+    const VALUES = [
+        Number(country_id),
+        name,
+        description || null,
+        rating_culture || null,
+        rating_scenery || null,
+        rating_fun || null,
+        rating_safety || null
+    ]
+
+    db.run(query, VALUES, function (err) {
+        if (err) {
+            res.status(500).json({ error: "Failed to insert places" })
+        } else {
+            res.status(201).json({
+                message: "Place added succesfully",
+                place_id: this.lastID
+            })
+        }
+    })
+})
+
+
+
+
+
+
+
+
 
 // posting a new trip plan
 app.post("/plannedtrips", (req, res) => {
@@ -96,12 +163,34 @@ app.post("/plannedtrips", (req, res) => {
 // show all planned trips
 app.get("/plannedtrips", (req, res) => {
 
+    const countryId = req.query.country_id
+    const sort = req.query.sort;
+    const order = req.query.order || "asc" // Default to ascending order
 
-    const query = `
-    SELECT * FROM plannedTrips
+    console.log("country id:", countryId);
+
+    let query = `
+    SELECT plannedtrips.*, countries.name AS country_name
+    FROM plannedtrips
+    JOIN countries ON plannedtrips.country_id = countries.id
     `
 
-    db.all(query, function (err, rows) {
+    const values = []
+
+    if (countryId) {
+        query += `WHERE plannedtrips.country_id = ?`; // Add the WHERE clause
+        values.push(Number(countryId)) // Add the country ID to the values array
+    }
+
+    if (sort === "startDate") {
+        query += `ORDER BY startDate ${order.toUpperCase() === "DESC" ? "DESC" : "ASC"}` // Use ASC or DESC based on the order parameter
+    }
+
+
+    console.log("Final query:", query);
+    console.log("Values:", values);
+
+    db.all(query, values, function (err, rows) {
         if (err) {
             res.status(500).json({ error: "Internal server error" })
         } else {

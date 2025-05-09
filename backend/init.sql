@@ -12,15 +12,20 @@ CREATE TABLE IF NOT EXISTS countries (
 
 
 CREATE TABLE IF NOT EXISTS places (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL UNIQUE,
-    country_id INTEGER NOT NULL,
-    FOREIGN KEY (country_id) REFERENCES countries(id)
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  country_id INTEGER NOT NULL,
+  rating_culture INTEGER,
+  rating_scenery INTEGER,
+  rating_fun INTEGER,
+  rating_safety INTEGER,
+  FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
 CREATE TABLE IF NOT EXISTS plannedTrips (
     id INTEGER PRIMARY KEY,
-    country_id,
+    country_id INTEGER,
     city TEXT NOT NULL,
     startDate TEXT,
     endDate TEXT,
