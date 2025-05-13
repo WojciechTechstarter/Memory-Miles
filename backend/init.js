@@ -33,3 +33,5 @@ db.exec(sql, (err) => {
         console.log('🛑 Database connection closed.');
     });
 });
+
+

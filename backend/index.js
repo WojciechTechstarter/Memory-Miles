@@ -5,8 +5,10 @@ const sqlite3 = require("sqlite3").verbose()
 // db is the database connection object
 const db = new sqlite3.Database("./database/traveljournal.db")
 // Importing the cors module to enable Cross-Origin Resource Sharing
+const cors = require("cors")
 
 
+app.use(cors())
 //Middleware to parse JSON data from incoming requests
 app.use(express.json())
 
@@ -83,10 +85,11 @@ app.get("/places", (req, res) => {
     }
 })
 
+
 // posting a new place
 app.post("/places", (req, res) => {
     const {
-        country_id, name, description, rating_culture, rating_scenery,
+        country_id, name, description, image_url, rating_culture, rating_scenery,
         rating_fun, rating_safety } = req.body
 
 
@@ -98,15 +101,16 @@ app.post("/places", (req, res) => {
 
     const query =
         `INSERT INTO places (
-         country_id, name, description, rating_culture, rating_scenery,
+         country_id, name, description, image_url, rating_culture, rating_scenery,
         rating_fun, rating_safety
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
          `
 
     const VALUES = [
         Number(country_id),
         name,
         description || null,
+        image_url || null,
         rating_culture || null,
         rating_scenery || null,
         rating_fun || null,
@@ -126,7 +130,40 @@ app.post("/places", (req, res) => {
 })
 
 
+// editing an existing trip
+app.put("/places/:id", (req, res) => {
+    const placesId = req.params.id
+    const {
+        country_id, name, description, image_url, rating_culture, rating_scenery,
+        rating_fun, rating_safety
+    } = req.body
 
+    if (!name) {
+        return res.status(404).json({ error: "Missing data" })
+    }
+
+    const query = `
+    UPDATE places
+    SET country_id = ?, name = ?, description = ?, image_url = ?, rating_culture = ?, rating_scenery = ?, 
+    rating_fun = ?, rating_safety = ?
+    WHERE id = ?
+    `
+    const values = [country_id, name, description, image_url, rating_culture, rating_scenery,
+        rating_fun, rating_safety, placesId]
+
+    db.run(query, values, function (err) {
+        if (err) {
+            res.stutus(500).json({ error: "Internal server error" })
+        } else if (this.change = 0) {
+            res.status(404).json({ error: "No changes were made" })
+        } else {
+            res.status(201).json({ message: "The place has been edited successfully" })
+        }
+    })
+
+
+
+})
 
 
 

@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS places (
   name TEXT NOT NULL,
   description TEXT,
   country_id INTEGER NOT NULL,
+  image_url TEXT,
   rating_culture INTEGER,
   rating_scenery INTEGER,
   rating_fun INTEGER,
