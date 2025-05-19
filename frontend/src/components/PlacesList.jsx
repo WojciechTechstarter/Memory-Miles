@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import "./PlacesList.css"
 import PlaceCard from "./PlaceCard"
+import AddPlaceForm from "./AddPlaceForm"
 
 
 
-function PlacesList() {
+function PlacesList({ showOnlyForm = false }) {
 
     const [places, setPlaces] = useState([])
     const [selectedCountry, setSelectedCountry] = useState("")
@@ -12,6 +13,22 @@ function PlacesList() {
     const [description, setDescription] = useState("")
     const [imageUrl, setImageUrl] = useState("")
     const [countryId, setCountryId] = useState("")
+    const [countries, setCountries] = useState([])
+
+    // fetching countries
+    useEffect(() => {
+        fetch("http://localhost:5005/countries")
+            .then((res) => res.json())
+            .then((data) => {
+                setCountries(data);
+                console.log("Fetched countries:", data);
+
+            })
+            .catch((err) => {
+                console.error("Failed to fetch countries", err);
+            });
+    }, []);
+
 
     // fetching a places by id
     const fetchPlacesByCountry = async (id) => {
@@ -74,55 +91,64 @@ function PlacesList() {
     }, []);
 
     return (
-        <div >
-            <select
-                value={selectedCountry}
-                onChange={(x) => {
-                    const newId = x.target.value
-                    setSelectedCountry(newId)
-                    console.log("Selected country ID:", newId);
-                    fetchPlacesByCountry(newId)
+        <div>
+            {/* show filter dropdown only on /places */}
+            {!showOnlyForm && (
+                <>
+                    <select
+                        id="selectCountry"
+                        name="selectCountry"
+                        value={countryId}
+                        onChange={(e) => setCountryId(e.target.value)}
+                    >
+                        <option value="">-- Choose a country --</option>
+                        {countries.map((country) => {
+                            <option
+                                key={country.id} value={country.id}
+                            >
+                                {country.name}
+                            </option>
+                        })}
+                    </select>
+                </>
+            )}
 
-                }}
-            >
-                <option value="4">Hongkong</option>
-                <option value="2">Thailand</option>
-            </select>
-            <form className="place-form" onSubmit={handleSubmit}>
-                <label htmlFor="placeName">Name of the new place</label>
-                <input type="text" id="placeName" name="placeName" value={placeName}
-                    onChange={(e) => setPlaceName(e.target.value)} />
 
-                <label htmlFor="description">Description</label>
-                <input type="text" id="description" name="description" value={description}
-                    onChange={(e) => setDescription(e.target.value)} />
+            {/* show the form only on add page*/}
 
-                <label htmlFor="image_ulr">Image URL</label>
-                <input type="text" id="image_url" name="image_url" value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)} />
+            {showOnlyForm && (
+                <AddPlaceForm
+                    placeName={placeName}
+                    setPlaceName={setPlaceName}
+                    description={description}
+                    setDescription={setDescription}
+                    imageUrl={imageUrl}
+                    setImageUrl={setImageUrl}
+                    countryId={countryId}
+                    setCountryId={setCountryId}
+                    handleSubmit={handleSubmit}
+                    countries={countries}
+                />
+            )}
 
-                <label htmlFor="selectCountry">Select a country</label>
-                <select id="selectCountry" name="selectCountry" value={countryId}
-                    onChange={(e) => setCountryId(e.target.value)}>
-                    <option value="">-- Choose a country --</option>
-                    <option value="1">Japan</option>
-                    <option value="2">Thailand</option>
-                    <option value="4">Hongkong</option>
-                </select>
-                <button type="submit">Add Place</button>
-            </form>
-            <h2>Visited Places</h2>
-            <div className="card-wrapper">
+            {/* show cards only on /places */}
+            {!showOnlyForm && (
+                <>
+                    <h2>Visited Places</h2>
+                    <div className="card-wrapper">
 
-                {places.map((place) => (
-                    <PlaceCard
-                        key={place.id}
-                        name={place.name}
-                        description={place.description}
-                        image_url={place.image_url}
-                    />
-                ))}
-            </div>
+                        {places.map((place) => (
+                            <PlaceCard
+                                key={place.id}
+                                name={place.name}
+                                description={place.description}
+                                image_url={place.image_url}
+                            />
+                        ))}
+                    </div>
+                </>
+            )}
+
         </div >
     );
 }

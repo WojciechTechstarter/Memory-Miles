@@ -65,29 +65,30 @@ app.get("/places", (req, res) => {
 })
 
 
+
 // get /places?country_id=.., showi only places for a selected country
-app.get("/places", (req, res) => {
+app.get("/place", (req, res) => {
     const countryId = req.query.country_id
 
     if (!countryId) {
-        res.send(400).json("The query parameter is missing")
-    } else {
-        db.all(`SELECT * FROM places WHERE country_id = ?`,
-            [countryId],
-            (err, rows) => {
-                if (err) {
-                    res.status(500).json({ error: 'Internal server error' })
-                } else {
-                    res.send(rows).json("Here are the places")
-                }
-            }
-        )
+        return res.status(400).json({ error: "The query parameter is missing" })
     }
+
+    db.all(`SELECT * FROM places WHERE country_id = ?`,
+        [countryId], (err, rows) => {
+            if (err) {
+                res.status(500).json({ error: 'Internal server error' })
+            } else {
+                res.json(rows)
+            }
+        }
+    )
+
 })
 
 
 // posting a new place
-app.post("/places", (req, res) => {
+app.post("/place", (req, res) => {
     const {
         country_id, name, description, image_url, rating_culture, rating_scenery,
         rating_fun, rating_safety } = req.body
@@ -95,18 +96,18 @@ app.post("/places", (req, res) => {
 
 
 
-    if (!country_id || !name) {
-        return res.status(404).json({ error: "Missing required fields: country_id or name" })
+    if (!country_id || !name || !image_url || !country_id) {
+        return res.status(400).json({ error: "All fields are required" })
     }
 
     const query =
         `INSERT INTO places (
          country_id, name, description, image_url, rating_culture, rating_scenery,
-        rating_fun, rating_safety
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        rating_fun, rating_safety) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
          `
 
-    const VALUES = [
+    const values = [
         Number(country_id),
         name,
         description || null,
@@ -117,15 +118,21 @@ app.post("/places", (req, res) => {
         rating_safety || null
     ]
 
-    db.run(query, VALUES, function (err) {
+    db.run(query, values, function (err) {
         if (err) {
-            res.status(500).json({ error: "Failed to insert places" })
-        } else {
-            res.status(201).json({
-                message: "Place added succesfully",
-                place_id: this.lastID
-            })
+            res.status(500).json({ error: "Internal server error" })
         }
+
+        const newPlace = {
+            id: this.lastID,
+            name,
+            description,
+            image_url,
+            country_id,
+        }
+
+        res.status(201).json(newPlace)
+
     })
 })
 
@@ -283,6 +290,24 @@ app.delete("/plannedtrips/:id", (req, res) => {
         }
     })
 })
+
+
+
+
+// db.all("SELECT id, name, country_id, typeof(country_id) FROM places", [], (err, rows) => {
+//     if (err) {
+//         console.error("Query error:", err.message);
+//     } else {
+//         console.log("📊 Your country_id data:");
+//         console.table(rows);
+//     }
+// });
+
+
+
+
+
+
 
 
 

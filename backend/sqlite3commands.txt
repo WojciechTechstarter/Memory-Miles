@@ -15,3 +15,8 @@ INSERT INTO table_name (column1, column2) VALUES ('value1', 'value2');
 
 Displaying a table:
 SELECT * FROM table_name
+
+Changing data
+UPDATE table_name
+SET column1 = new_value1, column2 = new_value2
+WHERE some_column = some_value;
