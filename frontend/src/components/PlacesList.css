@@ -1,12 +1,39 @@
-.place-card {
-    border: 1px solid lightgray;
-    box-shadow: 0 2px 4px rgba(38, 34, 34, 0.1);
-    border-radius: 10px;
-    padding: 12px;
-    margin: 16px;
-    max-width: 400px;
-    text-align: justify;
+body {
+    background-color: #fefefe;
+}
 
+main {
+    max-width: 2000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.select-country {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    margin-bottom: 20px;
+
+}
+
+.place-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 300px;
+    height: 520px;
+    padding: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #fff;
+    overflow: hidden;
+    /* 👈 prevents content from spilling out */
 }
 
 .place-card:hover {
@@ -25,12 +52,22 @@
 .card-wrapper {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 2000px;
 
 }
 
-img {
-    border-radius: 10px;
+.description {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
 
+img {
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
 .place-form {
@@ -38,10 +75,62 @@ img {
     flex-direction: column;
     gap: 5px;
     max-width: 400px;
+    margin: 0 auto;
     margin-bottom: 24px;
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background-color: #fafafa;
 
+}
+
+.place-card h3 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.place-card p {
+    margin: 4px 0;
+}
+
+.ratings {
+    margin-top: auto;
+    /* 👈 pushes it to the bottom */
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.ratings p {
+    margin: 2px 0;
+}
+
+
+.add-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.add-page h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-textarea {
+    resize: vertical;
+    /* allows user to stretch it manually */
+    padding: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    min-height: 100px;
+    /* 👈 force it to be visibly taller */
+    width: 100%;
+    /* fills the form width */
+    box-sizing: border-box;
+    /* fixes sizing issues */
 }

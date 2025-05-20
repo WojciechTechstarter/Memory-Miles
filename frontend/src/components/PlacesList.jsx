@@ -14,6 +14,10 @@ function PlacesList({ showOnlyForm = false }) {
     const [imageUrl, setImageUrl] = useState("")
     const [countryId, setCountryId] = useState("")
     const [countries, setCountries] = useState([])
+    const [ratingCulture, setRatingCulture] = useState("")
+    const [ratingFun, setRatingFun] = useState("");
+    const [ratingScenery, setRatingScenery] = useState("");
+    const [ratingSafety, setRatingSafety] = useState("");
 
     // fetching countries
     useEffect(() => {
@@ -47,6 +51,10 @@ function PlacesList({ showOnlyForm = false }) {
             description,
             image_url: imageUrl,
             country_id: Number(countryId), // convert to number for backend
+            rating_culture: Number(ratingCulture),
+            rating_scenery: Number(ratingScenery),
+            rating_fun: Number(ratingFun),
+            rating_safety: Number(ratingSafety),
         }
 
         try {
@@ -73,6 +81,11 @@ function PlacesList({ showOnlyForm = false }) {
             setDescription("");
             setImageUrl("");
             setCountryId("");
+            setRatingCulture("");
+            setRatingFun("");
+            setRatingScenery("");
+            setRatingSafety("");
+
         } catch (error) {
             console.log("Error adding place:", error)
         }
@@ -95,7 +108,8 @@ function PlacesList({ showOnlyForm = false }) {
             {/* show filter dropdown only on /places */}
             {!showOnlyForm && (
                 <>
-                    <select
+                    <h2 className="title">Visited Places</h2>
+                    <select className="select-country"
                         id="selectCountry"
                         name="selectCountry"
                         value={countryId}
@@ -128,13 +142,21 @@ function PlacesList({ showOnlyForm = false }) {
                     setCountryId={setCountryId}
                     handleSubmit={handleSubmit}
                     countries={countries}
+                    ratingCulture={ratingCulture}
+                    setRatingCulture={setRatingCulture}
+                    ratingFun={ratingFun}
+                    setRatingFun={setRatingFun}
+                    ratingScenery={ratingScenery}
+                    setRatingScenery={setRatingScenery}
+                    ratingSafety={ratingSafety}
+                    setRatingSafety={setRatingSafety}
                 />
             )}
 
             {/* show cards only on /places */}
             {!showOnlyForm && (
                 <>
-                    <h2>Visited Places</h2>
+
                     <div className="card-wrapper">
 
                         {places.map((place) => (
@@ -143,6 +165,10 @@ function PlacesList({ showOnlyForm = false }) {
                                 name={place.name}
                                 description={place.description}
                                 image_url={place.image_url}
+                                rating_culture={place.rating_culture}
+                                rating_fun={place.rating_fun}
+                                rating_scenery={place.rating_scenery}
+                                rating_safety={place.rating_safety}
                             />
                         ))}
                     </div>
