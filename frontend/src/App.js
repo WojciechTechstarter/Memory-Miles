@@ -10,8 +10,16 @@ function App() {
     <div>
       {/* Link To Navigation Bar */}
       <nav className="navbar">
-        <Link to="/places">Places</Link> | <Link to="/add">Add Place</Link>
-        | <Link to="/countries">Countries</Link>
+        <div className="navbar-left">
+          <Link to="/" className="navbar-title">🧭 Memory Miles</Link>
+        </div>
+        <div className="navbar-right">
+          <Link to="/places">Places</Link>
+          <span> | </span>
+          <Link to="/add">Add Place</Link>
+          <span> | </span>
+          <Link to="/countries">Countries</Link>
+        </div>
       </nav>
 
       {/* Route switcher */}

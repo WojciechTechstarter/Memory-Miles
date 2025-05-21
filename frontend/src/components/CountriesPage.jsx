@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-//import "./CountriesPage.css"
+import "./CountriesPage.css"
+import countryCodes from "../CountryCodes";
 
 function CountriesPage() {
     const [countries, setCountries] = useState([])
     const navigate = useNavigate()
 
     useEffect(() => {
-        fetch("http://localhost:5005/countries")
+        fetch("http://localhost:5005/countries-with-places")
             .then((res) => res.json())
             .then((data) => {
                 setCountries(data)
@@ -34,7 +35,16 @@ function CountriesPage() {
                         className="country-card"
                         onClick={(e) => handleCountryClick(country.id)}
                     >
-                        {country.name}
+                        <img
+                            src={
+                                countryCodes[country.name]
+                                    ? `https://flagcdn.com/w80/${countryCodes[country.name]}.png`
+                                    : "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
+                            }
+                            alt={`Flag of ${country.name}`}
+                            className="flag-icon"
+                        />
+                        <h2>{country.name}</h2>
                     </div>
                 ))}
             </div>
@@ -43,3 +53,5 @@ function CountriesPage() {
 }
 
 export default CountriesPage
+
+

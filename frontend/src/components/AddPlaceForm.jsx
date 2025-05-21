@@ -55,9 +55,13 @@ function AddPlaceForm({
                 onChange={(e) => setCountryId(e.target.value)}
             >
                 <option value="">-- Choose a country --</option>
-                <option value="1">Japan</option>
-                <option value="2">Thailand</option>
-                <option value="4">Hongkong</option>
+                {countries.map((country) => {
+                    return (
+                        <option key={country.id} value={country.id}>
+                            {country.name}
+                        </option>
+                    )
+                })}
             </select>
 
             <label htmlFor="rating_culture">Culture Rating (1-10)</label>

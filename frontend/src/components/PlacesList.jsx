@@ -19,9 +19,9 @@ function PlacesList({ showOnlyForm = false }) {
     const [ratingScenery, setRatingScenery] = useState("");
     const [ratingSafety, setRatingSafety] = useState("");
 
-    // fetching countries
+    // fetching countries 
     useEffect(() => {
-        fetch("http://localhost:5005/countries")
+        fetch("http://localhost:5005/countries-with-places")
             .then((res) => res.json())
             .then((data) => {
                 setCountries(data);
@@ -33,6 +33,12 @@ function PlacesList({ showOnlyForm = false }) {
             });
     }, []);
 
+    //fetching countries for the dropdown
+    useEffect(() => {
+        if (countryId) {
+            fetchPlacesByCountry(countryId);
+        }
+    }, [countryId]);
 
     // fetching a places by id
     const fetchPlacesByCountry = async (id) => {
@@ -104,76 +110,86 @@ function PlacesList({ showOnlyForm = false }) {
     }, []);
 
     return (
-        <div>
+
+        < div >
+
             {/* show filter dropdown only on /places */}
-            {!showOnlyForm && (
-                <>
-                    <h2 className="title">Visited Places</h2>
-                    <select className="select-country"
-                        id="selectCountry"
-                        name="selectCountry"
-                        value={countryId}
-                        onChange={(e) => setCountryId(e.target.value)}
-                    >
-                        <option value="">-- Choose a country --</option>
-                        {countries.map((country) => {
-                            <option
-                                key={country.id} value={country.id}
-                            >
-                                {country.name}
-                            </option>
-                        })}
-                    </select>
-                </>
-            )}
+            {
+                !showOnlyForm && (
+                    <>
+                        <h2 className="title">Visited Places</h2>
+
+                        <select className="select-country"
+                            id="selectCountry"
+                            name="selectCountry"
+                            value={countryId}
+                            onChange={(e) => {
+
+                                setCountryId(e.target.value)
+                            }}
+                        >
+                            <option value="">-- Choose a country --</option>
+                            {countries.map((country) => (
+                                <option key={country.id} value={country.id}>
+                                    {country.name}
+                                </option>
+                            ))}
+                        </select>
+                    </>
+                )
+            }
 
 
             {/* show the form only on add page*/}
 
-            {showOnlyForm && (
-                <AddPlaceForm
-                    placeName={placeName}
-                    setPlaceName={setPlaceName}
-                    description={description}
-                    setDescription={setDescription}
-                    imageUrl={imageUrl}
-                    setImageUrl={setImageUrl}
-                    countryId={countryId}
-                    setCountryId={setCountryId}
-                    handleSubmit={handleSubmit}
-                    countries={countries}
-                    ratingCulture={ratingCulture}
-                    setRatingCulture={setRatingCulture}
-                    ratingFun={ratingFun}
-                    setRatingFun={setRatingFun}
-                    ratingScenery={ratingScenery}
-                    setRatingScenery={setRatingScenery}
-                    ratingSafety={ratingSafety}
-                    setRatingSafety={setRatingSafety}
-                />
-            )}
+            {
+                showOnlyForm && (
+                    <AddPlaceForm
+                        placeName={placeName}
+                        setPlaceName={setPlaceName}
+                        description={description}
+                        setDescription={setDescription}
+                        imageUrl={imageUrl}
+                        setImageUrl={setImageUrl}
+                        countryId={countryId}
+                        setCountryId={setCountryId}
+                        handleSubmit={handleSubmit}
+                        countries={countries}
+                        ratingCulture={ratingCulture}
+                        setRatingCulture={setRatingCulture}
+                        ratingFun={ratingFun}
+                        setRatingFun={setRatingFun}
+                        ratingScenery={ratingScenery}
+                        setRatingScenery={setRatingScenery}
+                        ratingSafety={ratingSafety}
+                        setRatingSafety={setRatingSafety}
+                    />
+                )
+            }
 
             {/* show cards only on /places */}
-            {!showOnlyForm && (
-                <>
+            {
+                !showOnlyForm && (
+                    <>
 
-                    <div className="card-wrapper">
+                        <div className="card-wrapper">
 
-                        {places.map((place) => (
-                            <PlaceCard
-                                key={place.id}
-                                name={place.name}
-                                description={place.description}
-                                image_url={place.image_url}
-                                rating_culture={place.rating_culture}
-                                rating_fun={place.rating_fun}
-                                rating_scenery={place.rating_scenery}
-                                rating_safety={place.rating_safety}
-                            />
-                        ))}
-                    </div>
-                </>
-            )}
+                            {places.map((place) => (
+                                <PlaceCard
+                                    key={place.id}
+                                    name={place.name}
+                                    description={place.description}
+                                    image_url={place.image_url}
+                                    rating_culture={place.rating_culture}
+                                    rating_fun={place.rating_fun}
+                                    rating_scenery={place.rating_scenery}
+                                    rating_safety={place.rating_safety}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )
+            }
 
         </div >
     );

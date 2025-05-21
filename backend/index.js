@@ -23,6 +23,10 @@ app.get("/", (req, res) => {
 // db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Japan", 2]);
 // db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Cyprus", 1]);
 
+
+
+
+
 // db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`,
 //     ['Bulgaria', 1],
 //     function (err) {
@@ -34,7 +38,24 @@ app.get("/", (req, res) => {
 //     }
 // ),
 
+// app.post("/seed-extended-countries", (req, res) => {
+//     const insert = db.prepare(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`);
+//     extendedCountries.forEach((country) => {
+//         insert.run(country.name, country.continent_id);
+//     });
+//     insert.finalize((err) => {
+//         if (err) return res.status(500).json({ error: err.message });
+//         res.status(201).json({ message: "Extended countries seeded" });
+//     });
+// });
 
+
+app.delete("/delete-all-places", (req, res) => {
+    db.run("DELETE FROM places", (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "All places deleted" });
+    });
+});
 
 app.get("/countries", (req, res) => {
     // Query to select all countries from the database
@@ -47,6 +68,20 @@ app.get("/countries", (req, res) => {
         }
     })
 })
+
+app.get("/countries-with-places", (req, res) => {
+    const query = `
+    SELECT countries.id, countries.name
+    FROM countries
+    JOIN places ON countries.id = places.country_id
+    GROUP BY countries.id
+  `;
+
+    db.all(query, (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
 
 // get places route
 app.get("/places", (req, res) => {
