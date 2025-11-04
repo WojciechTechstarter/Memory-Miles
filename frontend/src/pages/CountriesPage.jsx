@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import "./CountriesPage.css"
+import "../css/CountriesPage.css"
 import countryCodes from "../CountryCodes";
 
 function CountriesPage() {
@@ -27,7 +27,7 @@ function CountriesPage() {
 
     return (
         <div className="countries-page">
-            <h2>Select a Country</h2>
+            <h2>Visited Countries</h2>
             <div className="country-grid">
                 {countries.map((country) => (
                     <div

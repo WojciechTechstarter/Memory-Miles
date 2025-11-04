@@ -18,44 +18,7 @@ app.get("/", (req, res) => {
 })
 
 
-// Inserting some countries into the database for testing purposes
-// db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Portugal", 1]);
-// db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Japan", 2]);
-// db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`, ["Cyprus", 1]);
 
-
-
-
-
-// db.run(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`,
-//     ['Bulgaria', 1],
-//     function (err) {
-//         if (err) {
-//             return console.error(`Error inserting country:`, err.message)
-//         } else {
-//             console.log(`Country inserted with ID ${this.lastID}`)
-//         }
-//     }
-// ),
-
-// app.post("/seed-extended-countries", (req, res) => {
-//     const insert = db.prepare(`INSERT INTO countries (name, continent_id) VALUES (?, ?)`);
-//     extendedCountries.forEach((country) => {
-//         insert.run(country.name, country.continent_id);
-//     });
-//     insert.finalize((err) => {
-//         if (err) return res.status(500).json({ error: err.message });
-//         res.status(201).json({ message: "Extended countries seeded" });
-//     });
-// });
-
-
-app.delete("/delete-all-places", (req, res) => {
-    db.run("DELETE FROM places", (err) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "All places deleted" });
-    });
-});
 
 app.get("/countries", (req, res) => {
     // Query to select all countries from the database
@@ -93,9 +56,9 @@ app.get("/places", (req, res) => {
     db.all(query, [], function (err, rows) {
         if (err) {
             res.status(501).json({ error: "Failed to display places. Try again later" })
-        } else[
+        } else {
             res.status(201).json(rows)
-        ]
+        }
     })
 })
 
@@ -195,8 +158,8 @@ app.put("/places/:id", (req, res) => {
 
     db.run(query, values, function (err) {
         if (err) {
-            res.stutus(500).json({ error: "Internal server error" })
-        } else if (this.change = 0) {
+            res.status(500).json({ error: "Internal server error" })
+        } else if (this.change === 0) {
             res.status(404).json({ error: "No changes were made" })
         } else {
             res.status(201).json({ message: "The place has been edited successfully" })
@@ -212,7 +175,7 @@ app.put("/places/:id", (req, res) => {
 
 
 
-// posting a new trip plan
+// posting a new planned trip
 app.post("/plannedtrips", (req, res) => {
     const { country_id, city, startDate, endDate, companions, notes } = req.body
 
@@ -279,7 +242,7 @@ app.get("/plannedtrips", (req, res) => {
 
 })
 
-// let the user edit existing trips
+// let the user edit existing planned trips
 app.put("/plannedtrips/:id", (req, res) => {
     const plannedTripsId = req.params.id
     const { country_id, city, startDate, endDate, companions, notes } = req.body

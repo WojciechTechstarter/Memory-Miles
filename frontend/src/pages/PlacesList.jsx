@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
-import "./PlacesList.css"
-import PlaceCard from "./PlaceCard"
-import AddPlaceForm from "./AddPlaceForm"
+import "../css/PlacesList.css"
+import PlaceCard from "../components/PlaceCard"
+import AddPlaceForm from "../components/AddPlaceForm"
+import { useLocation } from "react-router-dom";
+
+
 
 
 
@@ -13,18 +16,22 @@ function PlacesList({ showOnlyForm = false }) {
     const [description, setDescription] = useState("")
     const [imageUrl, setImageUrl] = useState("")
     const [countryId, setCountryId] = useState("")
-    const [countries, setCountries] = useState([])
+    const [fillteredcountries, setFillteredCountries] = useState([])
+    const [allcountries, setAllCountries] = useState([])
     const [ratingCulture, setRatingCulture] = useState("")
     const [ratingFun, setRatingFun] = useState("");
     const [ratingScenery, setRatingScenery] = useState("");
     const [ratingSafety, setRatingSafety] = useState("");
+    const location = useLocation();
+    const selectedFromNav = location.state?.selectedCountryId;
 
-    // fetching countries 
+
+    // fetching filltered countries 
     useEffect(() => {
         fetch("http://localhost:5005/countries-with-places")
             .then((res) => res.json())
             .then((data) => {
-                setCountries(data);
+                setFillteredCountries(data);
                 console.log("Fetched countries:", data);
 
             })
@@ -32,6 +39,21 @@ function PlacesList({ showOnlyForm = false }) {
                 console.error("Failed to fetch countries", err);
             });
     }, []);
+
+    // fetching all countries 
+    useEffect(() => {
+        fetch("http://localhost:5005/countries")
+            .then((res) => res.json())
+            .then((data) => {
+                setAllCountries(data);
+                console.log("Fetched countries:", data);
+
+            })
+            .catch((err) => {
+                console.error("Failed to fetch countries", err);
+            });
+    }, []);
+
 
     //fetching countries for the dropdown
     useEffect(() => {
@@ -98,16 +120,27 @@ function PlacesList({ showOnlyForm = false }) {
     }
 
 
+    // useEffect(() => {
+    //     fetch("http://localhost:5005/places")
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //             setPlaces(data);
+    //         })
+    //         .catch((err) => {
+    //             console.error("Failed to fetch places", err);
+    //         });
+    // }, []);
+
     useEffect(() => {
-        fetch("http://localhost:5005/places")
-            .then((res) => res.json())
-            .then((data) => {
-                setPlaces(data);
-            })
-            .catch((err) => {
-                console.error("Failed to fetch places", err);
-            });
-    }, []);
+        if (selectedFromNav) {
+            setSelectedCountry(selectedFromNav); // so dropdown stays in sync
+            fetchPlacesByCountry(selectedFromNav);
+        } else {
+            fetch("http://localhost:5005/places")
+                .then((res) => res.json())
+                .then((data) => setPlaces(data));
+        }
+    }, [selectedFromNav]);
 
     return (
 
@@ -129,7 +162,7 @@ function PlacesList({ showOnlyForm = false }) {
                             }}
                         >
                             <option value="">-- Choose a country --</option>
-                            {countries.map((country) => (
+                            {fillteredcountries.map((country) => (
                                 <option key={country.id} value={country.id}>
                                     {country.name}
                                 </option>
@@ -154,7 +187,7 @@ function PlacesList({ showOnlyForm = false }) {
                         countryId={countryId}
                         setCountryId={setCountryId}
                         handleSubmit={handleSubmit}
-                        countries={countries}
+                        countries={allcountries}
                         ratingCulture={ratingCulture}
                         setRatingCulture={setRatingCulture}
                         ratingFun={ratingFun}

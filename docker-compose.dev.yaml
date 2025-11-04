@@ -1,0 +1,79 @@
+version: "3.9"
+
+services:
+    # my backend container
+    api:
+        # building my existing backend dockefile
+        build:
+            # folder where the Dockerfile is
+            context: ./backend
+            # name of the Dockerfile
+            dockerfile: Dockerfile
+        # name of the container
+        container_name: memory-miles-api
+        # inside container this becomes the current working directory, so all of the commands run from there
+        working_dir: /app
+        # volumes - connect files between the host (my computer) and the container
+        volumes:
+            - ./backend:/app
+            # creates an empty mount inside the container so my Node modules don't get deleted/overwritten
+            - /app/node_modules
+            # named Docker volume so that it doesn't get deleted when the container is deleted/rebuilt
+            - mm_sqlite:/app/data
+        # environment variables
+        environment:
+            - NODE_ENV=development
+            - PORT=5005
+            - CORS_ORIGIN=http://localhost:3000
+            - DB_PATH=/app/data/traveljournal.db
+        # ports
+        ports:
+            - 5005:5005
+        # overrides the default command in my Dockerfile (node indes.js) with nodemon, so it restarts automatically when the file changes
+        command: npx nodemon index.js
+        # define which network the container connects to (both api and web to the same one)
+        networks:
+            - mm_net
+
+    # my frontend container -similar logic but for React
+    web:
+        # building my existing frontend dockefile
+        build:
+            # folder where the Dockerfile is
+            context: ./frontend
+            # name of the Dockerfile
+            dockerfile: Dockerfile
+        # name of the container
+        container_name: memory-miles-web
+        # inside container this becomes the current working directory, so all of the commands run from there
+        working_dir: /app
+        # volumes - connect files between the host (my computer) and the container
+        volumes:
+            - ./frontend:/app
+            # creates an empty mount inside the container so my Node modules don't get deleted/overwritten
+            - /app/node_modules
+        # environment variables
+        environment:
+            - PORT=3000
+            # tells the React app where the API is
+            - REACT_APP_API_URL=http://memory-miles-api:5005
+            # two "polling" methods to check if the API is up and running
+            - CHOKIDAR_USEPOLLING=true
+            - WATCHPACK_POLLING=true
+        # ports
+        ports:
+            - "3000:3000"
+        # don't start until api container has arrived
+        depends_on:
+            - api
+        # overrides the default command in my Dockerfile (node indes.js) with nodemon, so it restarts automatically when the file changes
+        command: npm start
+        # define which network the container connects to (both api and web to the same one)
+        networks:
+            - mm_net
+
+# declaring a named volume used above. Like a tiny persistend storage managed by Docker (for database)
+volumes:
+    mm_sqlite: # declaring a named network used above
+networks:
+    mm_net:

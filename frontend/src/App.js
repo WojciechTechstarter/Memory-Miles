@@ -1,9 +1,9 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
-import PlacesList from './components/PlacesList';
-import AddPlacePage from './AddPlacePage';
-import "./Navbar.css"
-import CountriesPage from './components/CountriesPage';
+import PlacesList from './pages/PlacesList';
+import AddPlacePage from './pages/AddPlacePage';
+import "./css/Navbar.css"
+import CountriesPage from './pages/CountriesPage';
 
 function App() {
   return (
@@ -25,6 +25,7 @@ function App() {
       {/* Route switcher */}
       <main>
         <Routes>
+          <Route path="/" element={<PlacesList />} />
           <Route path="/places" element={<PlacesList />} />
           <Route path="/add" element={<AddPlacePage />} />
           <Route path="/countries" element={<CountriesPage />} />

@@ -3,6 +3,7 @@
     description={place.description}
     image_url={place.image_url}
 /> */
+import "../css/PlaceCard.css"
 
 function PlaceCard({ name, description, image_url, rating_scenery,
     rating_fun, rating_culture, rating_safety

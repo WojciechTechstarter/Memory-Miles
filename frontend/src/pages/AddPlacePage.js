@@ -1,5 +1,5 @@
 import React from 'react'
-import PlacesList from './components/PlacesList'
+import PlacesList from './PlacesList'
 
 function AddPlacePage() {
     return (
