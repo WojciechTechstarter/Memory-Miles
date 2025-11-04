@@ -1,9 +1,21 @@
-# Node modules
-backend/node_modules
+# Node
+node_modules
+npm-debug.log
+.env
 
-# SQLite database file
-backend/database/*.db
+# Build files
+build
+dist
 
-# Logs
+# SQLite
+*.db
+*.sqlite
+
+# Docker
 *.log
+Dockerfile
+.dockerignore
 
+# OS / IDE
+.DS_Store
+.vscode
